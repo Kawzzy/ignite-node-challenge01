@@ -28,13 +28,15 @@ const server = http.createServer((req, res) => {
 
           const { title, description, isDone } = body;
 
-          const data = {
+          const task = {
+            id: 2,
             title,
             description,
             isDone,
           };
 
-          database.insert("tasks", data);
+          const data = database.insert("tasks", task);
+          res.writeHead(200).end(`Task: ${data.title} registrada com sucesso`);
         });
     }
   } else {
