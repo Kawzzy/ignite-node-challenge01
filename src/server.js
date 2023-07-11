@@ -16,21 +16,27 @@ const server = http.createServer((req, res) => {
       return data;
     }
 
-    // if (method === "POST") {
-    //   // const { titulo, descricao, isConcluida } = req.body;
-    //   let body = [];
-    //   req
-    //     .on("data", (chunk) => {
-    //       body.push(chunk);
-    //     })
-    //     .on("end", () => {
-    //       body = Buffer.concat(body).toString();
-    //     });
+    if (method === "POST") {
+      let body = [];
 
-    //   console.log("body", body);
-    //   // console.log(titulo, descricao, isConcluida);
-    //   database.insert("tasks" /*, data */);
-    // }
+      req
+        .on("data", (chunk) => {
+          body.push(chunk);
+        })
+        .on("end", () => {
+          body = JSON.parse(Buffer.concat(body).toString());
+
+          const { title, description, isDone } = body;
+
+          const data = {
+            title,
+            description,
+            isDone,
+          };
+
+          database.insert("tasks", data);
+        });
+    }
   } else {
     res.end("URL não encontrada").statusCode(404);
   }

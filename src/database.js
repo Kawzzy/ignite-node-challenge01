@@ -13,5 +13,7 @@ export class Database {
     } else {
       this.#database[table] = data;
     }
+
+    return data;
   }
 }
