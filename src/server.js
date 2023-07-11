@@ -11,9 +11,9 @@ const server = http.createServer((req, res) => {
 
   if (url && url === "/tasks") {
     if (method === "GET") {
-      const data = database.select("tasks");
+      const tasks = database.select("tasks");
 
-      return data;
+      return res.writeHead(200).end(JSON.stringify(tasks));
     }
 
     if (method === "POST") {
