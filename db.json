@@ -1,16 +1,1 @@
-{
-  "tasks": [
-    {
-      "id":1,
-      "title":"Primeira task",
-      "description":"Estudar",
-      "isDone":false
-    },
-    {
-      "id":2,
-      "title":"Segunda task",
-      "description":"Praticar",
-      "isDone":false
-    }
-  ]
-}
+{"tasks":[{"id":"1312c90e-2496-4681-bb37-5c4b60ad5ae9","title":"First task","description":"Teste middleware and randomUUID","isDone":false}]}
