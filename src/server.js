@@ -11,7 +11,7 @@ const server = http.createServer(async (req, res) => {
   await convertDataToJson(req, res);
 
   const route = routes.find(
-    (route) => route.method === method && route.url === url
+    (route) => route.method === method && route.url.test(url)
   );
 
   if (route) {
