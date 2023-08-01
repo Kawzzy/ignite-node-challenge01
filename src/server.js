@@ -15,6 +15,10 @@ const server = http.createServer(async (req, res) => {
   );
 
   if (route) {
+    const routeParams = req.url.match(route.url);
+
+    req.params = { ...routeParams.groups };
+
     return route.handler(req, res);
   } else {
     res.writeHead(404).end("URL não encontrada");

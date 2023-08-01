@@ -27,6 +27,16 @@ export class Database {
     return data;
   }
 
+  selectUnique(table, id) {
+    const rowIndex = this.#database[table].findIndex((row) => row.id === id);
+
+    if (rowIndex > -1) {
+      const data = this.#database[table][rowIndex];
+
+      return data;
+    }
+  }
+
   insert(table, data) {
     if (Array.isArray(this.#database[table])) {
       this.#database[table].push(data);
@@ -37,5 +47,25 @@ export class Database {
     this.#persiste();
 
     return data;
+  }
+
+  update(table, id, data) {
+    const rowIndex = this.#database[table].findIndex((row) => row.id === id);
+
+    if (rowIndex > -1) {
+      this.#database[table][rowIndex] = { id, ...data };
+      this.#persiste();
+    }
+
+    return data;
+  }
+
+  delete(table, id) {
+    const rowIndex = this.#database[table].findIndex((row) => row.id === id);
+
+    if (rowIndex > -1) {
+      this.#database[table].splice(rowIndex, 1);
+      this.#persiste();
+    }
   }
 }
