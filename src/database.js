@@ -21,12 +21,6 @@ export class Database {
     fs.writeFile(databasePath, JSON.stringify(this.#database));
   }
 
-  select(table) {
-    const data = this.#database[table] ?? [];
-
-    return data;
-  }
-
   selectUnique(table, id) {
     const rowIndex = this.#database[table].findIndex((row) => row.id === id);
 
@@ -35,6 +29,12 @@ export class Database {
 
       return data;
     }
+  }
+
+  select(table) {
+    const data = this.#database[table] ?? [];
+
+    return data;
   }
 
   insert(table, data) {

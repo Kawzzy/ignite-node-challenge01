@@ -7,6 +7,17 @@ const database = new Database();
 export const routes = [
   {
     method: "GET",
+    url: buildRoutePath("/tasks/:id"),
+    handler: (req, res) => {
+      const { id } = req.params;
+
+      const task = database.selectUnique("tasks", id);
+
+      return res.writeHead(200).end(JSON.stringify(task));
+    },
+  },
+  {
+    method: "GET",
     url: buildRoutePath("/tasks"),
     handler: (req, res) => {
       const tasks = database.select("tasks");
