@@ -27,25 +27,6 @@ export const routes = [
   },
   {
     method: "POST",
-    url: buildRoutePath("/tasks/done/:id"),
-    handler: (req, res) => {
-      const { id } = req.params;
-
-      const task = database.selectUnique("tasks", id);
-
-      if (!task.isDone) {
-        task.isDone = true;
-
-        const data = database.update("tasks", id, task);
-
-        return res.writeHead(200).end(`Task: ${data.title} foi finalizada.`);
-      }
-
-      return res.writeHead(200).end(`Task: ${task.title} já está finalizada.`);
-    },
-  },
-  {
-    method: "POST",
     url: buildRoutePath("/tasks"),
     handler: (req, res) => {
       const { title, description, isDone } = req.body;
@@ -86,6 +67,25 @@ export const routes = [
       database.delete("tasks", id);
 
       res.writeHead(204).end(`Task: ${id} foi excluída com sucesso.`);
+    },
+  },
+  {
+    method: "PATCH",
+    url: buildRoutePath("/tasks/:id/complete"),
+    handler: (req, res) => {
+      const { id } = req.params;
+
+      const task = database.selectUnique("tasks", id);
+
+      if (!task.isDone) {
+        task.isDone = true;
+
+        const data = database.update("tasks", id, task);
+
+        return res.writeHead(200).end(`Task: ${data.title} foi finalizada.`);
+      }
+
+      return res.writeHead(200).end(`Task: ${task.title} já está finalizada.`);
     },
   },
 ];
