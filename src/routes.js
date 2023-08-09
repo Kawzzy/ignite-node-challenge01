@@ -27,6 +27,25 @@ export const routes = [
   },
   {
     method: "POST",
+    url: buildRoutePath("/tasks/done/:id"),
+    handler: (req, res) => {
+      const { id } = req.params;
+
+      const task = database.selectUnique("tasks", id);
+
+      if (!task.isDone) {
+        task.isDone = true;
+
+        const data = database.update("tasks", id, task);
+
+        return res.writeHead(200).end(`Task: ${data.title} foi finalizada.`);
+      }
+
+      return res.writeHead(200).end(`Task: ${task.title} já está finalizada.`);
+    },
+  },
+  {
+    method: "POST",
     url: buildRoutePath("/tasks"),
     handler: (req, res) => {
       const { title, description, isDone } = req.body;
