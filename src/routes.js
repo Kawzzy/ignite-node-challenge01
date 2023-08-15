@@ -39,7 +39,9 @@ export const routes = [
       };
 
       const data = database.insert("tasks", task);
-      res.writeHead(200).end(`Task: ${data.title} registrada com sucesso.`);
+      res
+        .writeHead(200)
+        .end(`Task: ${data.title} com id: ${data.id} registrada com sucesso.`);
     },
   },
   {
@@ -47,15 +49,30 @@ export const routes = [
     url: buildRoutePath("/tasks/:id"),
     handler: (req, res) => {
       const { id } = req.params;
-      const { title, description, isDone } = req.body;
+      const { title, description } = req.body;
 
-      const data = database.update("tasks", id, {
-        title,
-        description,
-        isDone,
-      });
+      let task = database.selectUnique("tasks", id);
 
-      res.writeHead(204).end(`Task: ${data.title} foi atualizada com sucesso.`);
+      if (task.completed_at === null) {
+        const updatedAttributes = {
+          title,
+          description,
+        };
+
+        task = { ...task, ...updatedAttributes };
+
+        const data = database.update("tasks", id, task);
+
+        res
+          .writeHead(204)
+          .end(`Task: ${data.title} foi atualizada com sucesso.`);
+      } else {
+        res
+          .writeHead(406)
+          .end(
+            `Não é possível fazer update em uma task que já está marcada como completa.`
+          );
+      }
     },
   },
   {
@@ -77,10 +94,8 @@ export const routes = [
 
       const task = database.selectUnique("tasks", id);
 
-      if (!task.isDone) {
-        task.isDone = true;
-
-        const data = database.update("tasks", id, task);
+      if (!task.completed_at) {
+        const data = database.update("tasks", id, task, true);
 
         return res.writeHead(200).end(`Task: ${data.title} foi finalizada.`);
       }
