@@ -4,6 +4,26 @@ import { buildRoutePath } from "./utils/build-route-path.js";
 
 const database = new Database();
 
+function validateNull(res, title, description) {
+  if (title == null) {
+    res.writeHead(409).end("Informe um título.");
+  }
+
+  if (description == null) {
+    res.writeHead(409).end("Informe uma descrição.");
+  }
+}
+
+function getTask(res, id) {
+  const task = database.selectUnique("tasks", id);
+
+  if (!task) {
+    res.writeHead(404).end(`Task com id: ${id} não existe.`);
+  }
+
+  return task;
+}
+
 export const routes = [
   {
     method: "GET",
@@ -11,9 +31,9 @@ export const routes = [
     handler: (req, res) => {
       const { id } = req.params;
 
-      const task = database.selectUnique("tasks", id);
+      const task = getTask(res, id);
 
-      return res.writeHead(200).end(JSON.stringify(task));
+      res.writeHead(200).end(JSON.stringify(task));
     },
   },
   {
@@ -29,13 +49,14 @@ export const routes = [
     method: "POST",
     url: buildRoutePath("/tasks"),
     handler: (req, res) => {
-      const { title, description, isDone } = req.body;
+      const { title, description } = req.body;
+
+      validateNull(res, title, description);
 
       const task = {
         id: randomUUID(),
         title,
         description,
-        isDone,
       };
 
       const data = database.insert("tasks", task);
@@ -49,9 +70,12 @@ export const routes = [
     url: buildRoutePath("/tasks/:id"),
     handler: (req, res) => {
       const { id } = req.params;
+
+      let task = getTask(res, id);
+
       const { title, description } = req.body;
 
-      let task = database.selectUnique("tasks", id);
+      validateNull(res, title, description);
 
       if (task.completed_at === null) {
         const updatedAttributes = {
@@ -81,9 +105,13 @@ export const routes = [
     handler: (req, res) => {
       const { id } = req.params;
 
-      database.delete("tasks", id);
+      const task = getTask(res, id);
 
-      res.writeHead(204).end(`Task: ${id} foi excluída com sucesso.`);
+      if (task) {
+        database.delete("tasks", id);
+      }
+
+      res.writeHead(200).end(`Task: ${id} foi excluída com sucesso.`);
     },
   },
   {
@@ -92,7 +120,7 @@ export const routes = [
     handler: (req, res) => {
       const { id } = req.params;
 
-      const task = database.selectUnique("tasks", id);
+      const task = getTask(res, id);
 
       if (!task.completed_at) {
         const data = database.update("tasks", id, task, true);
